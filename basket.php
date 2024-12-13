@@ -29,8 +29,8 @@ $items = [];
  */
 function clearScreen(): void
 {
-    // system('clear');
-    system('cls'); // windows
+    system('clear');
+    // system('cls'); // windows
 }
 
 /**
@@ -133,26 +133,68 @@ function printCount(array $list): void
 
 // ========== Operations
 
+/**
+ * Outputs a list of operations to the user and prompts them to select one.
+ *
+ * This function is used to ask the user to select an operation from the
+ * list of available operations. The function outputs the list of operations
+ * and waits for user input.
+ *
+ * @param array $operations The list of operations to be printed.
+ *
+ * @return void
+ */
 function printOperations(array $operations): void
 {
     echo 'Выберите операцию для выполнения: ' . PHP_EOL;
     echo implode(PHP_EOL, $operations) . PHP_EOL . '> ';
 };
 
+/**
+ * Returns the current list of operations, or a subset of them if the shopping list is empty.
+ *
+ * If the shopping list is empty, it will return a subset of the operations that does not include
+ * the operations for showing the list and deleting items. Otherwise, it will return the full list of operations.
+ *
+ * @param array $operations The full list of operations.
+ * @param array $items The current shopping list.
+ *
+ * @return array The current list of operations.
+ */
 function getCurrentOperations(array $operations, array $items): array
 {
     return $items ? $operations : array_slice($operations, 0, 2);
 }
 
+/**
+ * Checks if a given key exists in an array.
+ *
+ * This function utilizes the built-in array_key_exists to determine if
+ * a specified key is present in the provided array.
+ *
+ * @param mixed $key The key to search for in the array.
+ * @param array $array The array in which to search for the key.
+ *
+ * @return bool True if the key exists in the array, false otherwise.
+ */
 function keyExists(mixed $key, array $array): bool
 {
     return array_key_exists($key, $array);
 }
 
+/**
+ * Outputs an error message indicating that the selected operation is unknown.
+ *
+ * This function is used when the user enters an operation number that does
+ * not exist in the list of available operations. It clears the screen and
+ * outputs an error message asking the user to try again.
+ *
+ * @return void
+ */
 
 function printWrongOperation(): void
 {
-    system('clear');
+    clearScreen();
     echo '!!! Неизвестный номер операции, повторите попытку.' . PHP_EOL;
 };
 
