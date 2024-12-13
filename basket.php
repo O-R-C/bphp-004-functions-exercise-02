@@ -203,6 +203,24 @@ function printWrongOperation(): void
 $operationNumber = '';
 $keyExist = false;
 
+/**
+ * Prompts the user to select an operation from the list of available operations.
+ *
+ * This function is used to ask the user to select an operation from the
+ * list of available operations. The function outputs the list of operations
+ * and waits for user input. If the entered operation number is not valid
+ * (i.e. does not exist in the list of available operations), the function
+ * clears the screen, outputs an error message asking the user to try again
+ * and then calls itself recursively until the user enters a valid operation
+ * number.
+ *
+ * @param mixed $operationNumber The number of the operation to be selected.
+ * @param bool $keyExist Whether the operation number is valid.
+ * @param array $operations The list of available operations.
+ * @param array $items The list of items in the shopping list.
+ *
+ * @return void
+ */
 function selectOperation(mixed &$operationNumber, bool $keyExist, array $operations, array $items): void
 {
     if ($keyExist) return;
