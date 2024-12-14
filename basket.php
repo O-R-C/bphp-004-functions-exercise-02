@@ -7,6 +7,7 @@ const OPERATION_ADD = 1;
 const OPERATION_DELETE = 2;
 const OPERATION_PRINT = 3;
 const OPERATION_CHANGE = 4;
+const OPERATION_RENAME = 5;
 
 $operations = [
     OPERATION_EXIT => OPERATION_EXIT . '. Завершить программу.',
@@ -14,6 +15,7 @@ $operations = [
     OPERATION_DELETE => OPERATION_DELETE . '. Удалить товар из списка покупок.',
     OPERATION_PRINT => OPERATION_PRINT . '. Отобразить список покупок.',
     OPERATION_CHANGE => OPERATION_CHANGE . '. Изменить количество товара в списке покупок.',
+    OPERATION_RENAME => OPERATION_RENAME . '. Изменить название товара в списке покупок.',
 ];
 
 $items = [];
@@ -326,6 +328,10 @@ function handleOperation(array &$items, string $operationNumber): void
         case OPERATION_CHANGE:
             operationChange($items);
             break;
+
+        case OPERATION_RENAME:
+            operationRename($items);
+            break;
     }
 }
 
@@ -342,7 +348,7 @@ function handleOperation(array &$items, string $operationNumber): void
  */
 function operationAdd(array &$items): void
 {
-    printString('Введение название товара для добавления в список:');
+    printString('Введите название товара для добавления в список:');
     printString('> ', false);
     $itemName = getStringSTDIN();
 
@@ -393,7 +399,7 @@ function operationDelete(array &$items): void
     printList($items);
     printEmptyString();
 
-    printString('Введение название товара для удаления из списка:');
+    printString('Введите название товара для удаления из списка:');
     printString('> ', false);
     $itemName = getStringSTDIN();
 
@@ -436,7 +442,7 @@ function operationChange(array &$items): void
     printList($items);
     printEmptyString();
 
-    printString('Введение название товара для изменения количества:');
+    printString('Введите название товара для изменения количества:');
     printString('> ', false);
     $itemName = getStringSTDIN();
 
@@ -445,7 +451,7 @@ function operationChange(array &$items): void
         return;
     }
 
-    printString('Введение количество товара (точное число | + прибавить число | - отнять число):');
+    printString('Введите количество товара (точное число | + прибавить число | - отнять число):');
     printString('> ', false);
     $itemQuantity = getStringSTDIN();
 
@@ -543,6 +549,67 @@ function deleteItem(mixed $itemName, array &$items): void
 
     unset($items[$itemName]);
     deleteItem($itemName, $items);
+}
+
+
+/**
+ * Renames an item in the shopping list.
+ *
+ * Prompts the user to enter the name of the item to be renamed and the new
+ * name. If the user enters an empty string, it outputs an error message and
+ * does not rename the item in the list. If the new name is already in the
+ * list, it outputs an error message and does not rename the item.
+ *
+ * @param array $items The list of items in which to rename the item.
+ *
+ * @return void
+ */
+function operationRename(array &$items): void
+{
+    printList($items);
+    printEmptyString();
+
+    printString('Введите название товара который нужно переименовать:');
+    printString('> ', false);
+    $itemName = getStringSTDIN();
+
+    if (!keyExists($itemName, $items)) {
+        showNoItem();
+        return;
+    }
+
+    printString('Введите новое название товара:');
+    printString('> ', false);
+    $itemNewName = getStringSTDIN();
+
+    if (keyExists($itemNewName, $items)) {
+        printString('Товар с таким названием уже существует.');
+        waitEnter();
+        return;
+    }
+
+    renameItem($itemName, $itemNewName, $items);
+}
+
+/**
+ * Renames an item in the shopping list.
+ *
+ * This function takes an item name, the new name, and a reference to the
+ * shopping list as arguments. It searches for the item in the list and if
+ * it finds it, it renames the item to the new name. If the item is not found,
+ * the function does nothing.
+ *
+ * @param mixed $itemName The name of the item to be renamed.
+ * @param mixed $itemNewName The new name of the item.
+ * @param array $items The shopping list in which to rename the item.
+ *
+ * @return void
+ */
+function renameItem(mixed $itemName, mixed $itemNewName, array &$items): void
+{
+    $t = $items[$itemName];
+    unset($items[$itemName]);
+    $items[$itemNewName] = $t;
 }
 
 // ========== Select Operation
