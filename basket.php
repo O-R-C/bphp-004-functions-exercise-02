@@ -183,11 +183,37 @@ function printList(array $list): void
 function printCount(array $list): void
 {
     $count = count($list);
-    $stringCount = (string) $count;
-    $postfix = (substr($stringCount, -2) > 4 && substr($stringCount, -2) < 21) ? 'позиций' : ($stringCount[-1] == 1 ? 'позиция' : ($stringCount[-1] > 4 ? 'позиций' : 'позиции'));
-    $amount = "Всего $count $postfix";
+    $lastWord = getCorrectWord($count);
+    $amount = "Всего $count $lastWord";
     printString($amount);
     waitEnter();
+}
+
+/**
+ * Returns the correct word for the given count of items.
+ *
+ * This function takes an integer as an argument and returns a string with the
+ * correct word for the given count, taking into account the Russian language
+ * rules for pluralization.
+ *
+ * @param int $count The count of items.
+ *
+ * @return string The correct word for the given count.
+ */
+function getCorrectWord(int $count): string
+{
+    $stringCount = (string) $count;
+
+    if ((substr($stringCount, -1) > 4 && substr($stringCount, -2) < 21))
+        return 'позиций';
+
+    if ($stringCount[-1] == 1)
+        return 'позиция';
+
+    if ($stringCount[-1] > 4)
+        return 'позиций';
+
+    return 'позиции';
 }
 
 
