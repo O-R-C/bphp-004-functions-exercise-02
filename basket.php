@@ -343,9 +343,7 @@ function deleteItem(mixed $itemName, array &$items): void
     deleteItem($itemName, $items);
 }
 
-// ========== Main
-
-$operationNumber = '';
+// ========== Select Operation
 
 /**
  * Prompts the user to select an operation from the list of available operations.
@@ -381,14 +379,38 @@ function selectOperation(mixed &$operationNumber, array $operations, array $item
     }
 }
 
-// ========== Start Program
+// ========== Main
 
-do {
+/**
+ * Starts the main loop of the program.
+ *
+ * This function is the entry point of the program. It clears the screen,
+ * prompts the user to select an operation, prints the selected operation,
+ * handles the operation, and then prints a separator line. If the operation
+ * was not the exit operation, it calls itself recursively until the user
+ * selects the exit operation. If the user selects the exit operation, it
+ * outputs a message indicating that the program is finished.
+ *
+ * @param array $items The list of items in the shopping list.
+ * @param array $operations The list of available operations.
+ *
+ * @return void
+ */
+function start(array &$items, array $operations): void
+{
     clearScreen();
     selectOperation($operationNumber, $operations, $items);
     printSelectedOperation($operations, $operationNumber);
     handleOperation($items, $operationNumber);
     printString("\n ----- ");
-} while ($operationNumber > 0);
 
-echo 'Программа завершена' . PHP_EOL;
+    if ($operationNumber > 0) {
+        start($items, $operations);
+    } else {
+        printString('Программа завершена.');
+    }
+}
+
+// ========== Start Program
+
+start($items, $operations);
