@@ -198,6 +198,24 @@ function printWrongOperation(): void
     echo '!!! Неизвестный номер операции, повторите попытку.' . PHP_EOL;
 };
 
+/**
+ * Prints the selected operation.
+ *
+ * This function outputs a message indicating which operation has been
+ * selected from the list of available operations. It first prints an empty
+ * line for separation and then outputs the name of the selected operation.
+ *
+ * @param array $operations The list of available operations.
+ * @param mixed $operationNumber The number of the selected operation.
+ *
+ * @return void
+ */
+function printSelectedOperation(array $operations, mixed $operationNumber): void
+{
+    printEmptyString();
+    echo 'Выбрана операция: '  . $operations[$operationNumber] . PHP_EOL;
+}
+
 // ========== Main
 
 $operationNumber = '';
@@ -239,8 +257,7 @@ function selectOperation(mixed &$operationNumber, array $operations, array $item
 do {
     clearScreen();
     selectOperation($operationNumber, $operations, $items);
-
-    echo 'Выбрана операция: '  . $operations[$operationNumber] . PHP_EOL;
+    printSelectedOperation($operations, $operationNumber);
 
     switch ($operationNumber) {
         case OPERATION_ADD:
