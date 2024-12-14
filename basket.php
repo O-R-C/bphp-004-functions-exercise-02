@@ -99,15 +99,7 @@ function keyExists(mixed $key, array $array): bool
  */
 function valueExists(mixed $value, array $array): bool
 {
-    $valueExists = false;
-
-    foreach ($array as $key => $itemValue) {
-        if ($value === $itemValue) {
-            $valueExists = true;
-            break;
-        }
-    }
-    return $valueExists;
+    return in_array($value, $array, true);
 }
 
 /**
