@@ -317,11 +317,30 @@ function operationDelete(array &$items): void
         return;
     }
 
-    if (in_array($itemName, $items, true) !== false) {
-        while (($key = array_search($itemName, $items, true)) !== false) {
-            unset($items[$key]);
-        }
-    }
+    deleteItem($itemName, $items);
+}
+
+/**
+ * Deletes all occurrences of an item from the shopping list.
+ *
+ * This function takes an item name and a reference to the shopping list as
+ * arguments. It searches for the item in the list and if it finds it, it
+ * deletes all occurrences of the item from the list. If the item is not found,
+ * the function does nothing.
+ *
+ * @param mixed $itemName The name of the item to be deleted.
+ * @param array $items The shopping list from which to delete the item.
+ *
+ * @return void
+ */
+function deleteItem(mixed $itemName, array &$items): void
+{
+    $key = array_search($itemName, $items, true);
+
+    if ($key === false) return;
+
+    unset($items[$key]);
+    deleteItem($itemName, $items);
 }
 
 // ========== Main
@@ -368,38 +387,8 @@ do {
     clearScreen();
     selectOperation($operationNumber, $operations, $items);
     printSelectedOperation($operations, $operationNumber);
-
-    // switch ($operationNumber) {
-    //     case OPERATION_ADD:
-    //         echo "Введение название товара для добавления в список: \n> ";
-    //         $itemName = getStringSTDIN();
-    //         $items[] = $itemName;
-    //         break;
-
-    //     case OPERATION_DELETE:
-    //         // Проверить, есть ли товары в списке? Если нет, то сказать об этом и попросить ввести другую операцию
-    //         echo 'Текущий список покупок:' . PHP_EOL;
-    //         echo 'Список покупок: ' . PHP_EOL;
-    //         echo implode("\n", $items) . "\n";
-
-    //         echo 'Введение название товара для удаления из списка:' . PHP_EOL . '> ';
-    //         $itemName = getStringSTDIN();
-
-    //         if (in_array($itemName, $items, true) !== false) {
-    //             while (($key = array_search($itemName, $items, true)) !== false) {
-    //                 unset($items[$key]);
-    //             }
-    //         }
-    //         break;
-
-    //     case OPERATION_PRINT:
-    //         printShoppingList($items, true);
-    //         break;
-    // }
-
     handleOperation($items, $operationNumber);
-
-    echo "\n ----- \n";
+    printString("\n ----- ");
 } while ($operationNumber > 0);
 
 echo 'Программа завершена' . PHP_EOL;
