@@ -159,7 +159,7 @@ function printCount(array $list): void
  */
 function printOperations(array $operations): void
 {
-    echo 'Выберите операцию для выполнения: ' . PHP_EOL;
+    printString('Выберите операцию для выполнения: ');
     echo implode(PHP_EOL, $operations) . PHP_EOL . '> ';
 };
 
@@ -208,7 +208,7 @@ function keyExists(mixed $key, array $array): bool
 function printWrongOperation(): void
 {
     clearScreen();
-    echo '!!! Неизвестный номер операции, повторите попытку.' . PHP_EOL;
+    printString('!!! Неизвестный номер операции, повторите попытку.');
 };
 
 /**
@@ -226,7 +226,8 @@ function printWrongOperation(): void
 function printSelectedOperation(array $operations, mixed $operationNumber): void
 {
     printEmptyString();
-    echo 'Выбрана операция: '  . $operations[$operationNumber] . PHP_EOL;
+    $operation = 'Выбрана операция: ' . $operations[$operationNumber];
+    printString($operation, false);
 }
 
 // ========== Handle Operation
@@ -260,11 +261,21 @@ function handleOperation(array &$items, string $operationNumber): void
     }
 }
 
-
+/**
+ * Adds an item to the shopping list.
+ *
+ * Prompts the user to enter the name of the item to be added to the list.
+ * If the user enters an empty string, it outputs an error message and
+ * does not add the item to the list.
+ *
+ * @param array $items The list of items to which to add the new item.
+ *
+ * @return void
+ */
 function operationAdd(array &$items): void
 {
     printString('Введение название товара для добавления в список: ');
-    echo "\n> ";
+    printString('> ', false);
     $itemName = getStringSTDIN();
 
     if (!$itemName) {
