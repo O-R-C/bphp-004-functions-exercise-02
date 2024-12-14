@@ -182,7 +182,10 @@ function printList(array $list): void
  */
 function printCount(array $list): void
 {
-    $amount = 'Всего ' . count($list) . ' позиций. ';
+    $count = count($list);
+    $stringCount = (string) $count;
+    $postfix = (substr($stringCount, -2) > 4 && substr($stringCount, -2) < 21) ? 'позиций' : ($stringCount[-1] == 1 ? 'позиция' : ($stringCount[-1] > 4 ? 'позиций' : 'позиции'));
+    $amount = "Всего $count $postfix";
     printString($amount);
     waitEnter();
 }
