@@ -6,12 +6,14 @@ const OPERATION_EXIT = 0;
 const OPERATION_ADD = 1;
 const OPERATION_DELETE = 2;
 const OPERATION_PRINT = 3;
+const OPERATION_CHANGE = 4;
 
 $operations = [
     OPERATION_EXIT => OPERATION_EXIT . '. Завершить программу.',
     OPERATION_ADD => OPERATION_ADD . '. Добавить товар в список покупок.',
     OPERATION_DELETE => OPERATION_DELETE . '. Удалить товар из списка покупок.',
     OPERATION_PRINT => OPERATION_PRINT . '. Отобразить список покупок.',
+    OPERATION_CHANGE => OPERATION_CHANGE . '. Изменить количество товара в списке покупок.',
 ];
 
 $items = [];
@@ -170,7 +172,10 @@ function printEmptyList(): void
 function printList(array $list): void
 {
     printString('Ваш список покупок: ');
-    echo implode(PHP_EOL, $list) . PHP_EOL;
+
+    foreach ($list as $key => $value) {
+        printString("$key - {$value}шт.");
+    }
 }
 
 /**
@@ -285,10 +290,24 @@ function printSelectedOperation(array $operations, mixed $operationNumber): void
     printEmptyString();
     $operation = 'Выбрана операция: ' . $operations[$operationNumber];
     printString($operation);
+    printEmptyString();
 }
 
 // ========== Handle Operation
 
+/**
+ * Handles the selected operation on the shopping list.
+ *
+ * This function takes the list of items and the selected operation number
+ * as arguments. It executes the corresponding operation based on the
+ * operation number, such as adding, deleting, or printing items in the 
+ * shopping list.
+ *
+ * @param array $items The list of items in the shopping list.
+ * @param string $operationNumber The number of the operation to be executed.
+ *
+ * @return void
+ */
 function handleOperation(array &$items, string $operationNumber): void
 {
     switch ($operationNumber) {
@@ -328,9 +347,31 @@ function operationAdd(array &$items): void
         return;
     }
 
-    $items[] = $itemName;
+    $existingItem = getExistingItem($itemName, $items);
+    if (getExistingItem($itemName, $items)) {
+        $items[$itemName]++;
+        return;
+    }
+
+    $items[$itemName] = 1;
 }
 
+function getExistingItem(mixed $itemName, array $items): mixed
+{
+    return $items[$itemName] ?? null;
+}
+
+/**
+ * Deletes an item from the shopping list.
+ *
+ * Prompts the user to enter the name of the item to be deleted from the list.
+ * If the user enters an empty string, it outputs an error message and
+ * does not delete the item from the list.
+ *
+ * @param array $items The list of items from which to delete the item.
+ *
+ * @return void
+ */
 function operationDelete(array &$items): void
 {
     printList($items);
