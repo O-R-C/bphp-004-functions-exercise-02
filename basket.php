@@ -86,6 +86,31 @@ function keyExists(mixed $key, array $array): bool
 }
 
 /**
+ * Checks if a given value exists in an array.
+ *
+ * This function iterates over the provided array and checks if the value of each
+ * item is equal to the given value. If it finds a match, it returns true. If it
+ * iterates over the entire array without finding a match, it returns false.
+ *
+ * @param mixed $value The value to search for in the array.
+ * @param array $array The array in which to search for the value.
+ *
+ * @return bool True if the value exists in the array, false otherwise.
+ */
+function valueExists(mixed $value, array $array): bool
+{
+    $valueExists = false;
+
+    foreach ($array as $key => $itemValue) {
+        if ($value === $itemValue) {
+            $valueExists = true;
+            break;
+        }
+    }
+    return $valueExists;
+}
+
+/**
  * Outputs a message asking the user to press enter to continue and then waits
  * for the user to press enter before continuing.
  *
@@ -294,8 +319,9 @@ function operationDelete(array &$items): void
 
     $itemName = getStringSTDIN();
 
-    if (!keyExists($itemName, $items)) {
+    if (!valueExists($itemName, $items)) {
         printString('Такого товара нет в списке.');
+        waitEnter();
         return;
     }
 
