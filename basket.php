@@ -52,9 +52,9 @@ function getStringSTDIN(): string
  *
  * @return void
  */
-function printString(string $string): void
+function printString(string $string, bool $newline = true): void
 {
-    echo $string . PHP_EOL;
+    echo $string . ($newline ? PHP_EOL : '');
 }
 
 /**
@@ -110,7 +110,7 @@ function printShoppingList(array $list, bool $pause = false): void
  */
 function printEmptyList(): void
 {
-    echo 'Ваш список покупок пуст' . PHP_EOL;
+    printString('Ваш список покупок пуст');
 }
 
 /**
@@ -124,7 +124,7 @@ function printEmptyList(): void
  */
 function printList(array $list): void
 {
-    echo 'Ваш список покупок: ' . PHP_EOL;
+    printString('Ваш список покупок: ');
     echo implode(PHP_EOL, $list) . PHP_EOL;
 }
 
@@ -137,8 +137,9 @@ function printList(array $list): void
  */
 function printCount(array $list): void
 {
-    echo 'Всего ' . count($list) . ' позиций. ' . PHP_EOL;
-    echo 'Нажмите enter для продолжения';
+    $amount = 'Всего ' . count($list) . ' позиций. ';
+    printString($amount);
+    printString('Нажмите enter для продолжения');
     fgets(STDIN);
 }
 
@@ -262,15 +263,16 @@ function handleOperation(array &$items, string $operationNumber): void
 
 function operationAdd(array &$items): void
 {
-    echo "Введение название товара для добавления в список: \n> ";
+    printString('Введение название товара для добавления в список: ');
+    echo "\n> ";
     $itemName = getStringSTDIN();
 
-    if (!trim($itemName)) {
-        printEmptyString();
+    if (!$itemName) {
+        printString('Название товара не может быть пустым.');
         return;
     }
 
-    $items[] = getStringSTDIN();
+    $items[] = $itemName;
 }
 
 // ========== Main
