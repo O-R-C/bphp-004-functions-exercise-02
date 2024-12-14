@@ -452,28 +452,52 @@ function operationChange(array &$items): void
     changeQuantity($itemName, $items, $itemQuantity);
 }
 
+
 /**
  * Changes the quantity of an item in the shopping list.
  *
+ * This function takes the name of the item, the shopping list, and a string
+ * representing the new quantity. The string can be a positive or negative
+ * number prefixed with '+' or '-' to adjust the current quantity, or an
+ * exact number to set the quantity directly. 
+ * 
  * If the quantity begins with a +, it adds the number to the current quantity.
  * If the quantity begins with a -, it subtracts the number from the current quantity.
  * Otherwise, it sets the quantity to the given number.
+ * 
+ * If the input is invalid, it
+ * outputs an error message. If the resulting quantity is zero or negative,
+ * the item is removed from the list.
  *
- * @param mixed $itemName The name of the item to be modified.
- * @param array $items The list of items in which the item is located.
- * @param string $itemQuantity The new quantity of the item.
+ * @param mixed $itemName The name of the item to change the quantity of.
+ * @param array $items The shopping list with item quantities.
+ * @param string $itemQuantity The quantity change string.
  *
  * @return void
  */
 function changeQuantity(mixed $itemName, array &$items, string $itemQuantity): void
 {
+    if ($itemQuantity === '0') {
+        unset($items[$itemName]);
+        return;
+    }
+
+    $operator = $itemQuantity[0] === '+' ? '+' : ($itemQuantity[0] === '-' ? '-' : null);
+    $quantity = $operator ? (int) substr($itemQuantity, 1) : (int)$itemQuantity;
+
+    if ($quantity === 0) {
+        showIncorrectQuantity();
+        return;
+    }
+
+
     if ($itemQuantity[0] === '+') {
-        $items[$itemName] += (int)substr($itemQuantity, 1);
+        $items[$itemName] += $quantity;
         return;
     }
 
     if ($itemQuantity[0] === '-') {
-        $items[$itemName] -= (int)substr($itemQuantity, 1);
+        $items[$itemName] -= $quantity;
 
         if ($items[$itemName] <= 0) {
             unset($items[$itemName]);
@@ -482,7 +506,22 @@ function changeQuantity(mixed $itemName, array &$items, string $itemQuantity): v
         return;
     }
 
-    $items[$itemName] = (int)$itemQuantity;
+    $items[$itemName] = $quantity;
+}
+
+/**
+ * Outputs a message indicating an incorrect quantity value has been entered.
+ *
+ * This function is called when a user enters a quantity that is not a valid
+ * integer. It notifies the user of the incorrect input and waits for the
+ * user to press enter before continuing.
+ *
+ * @return void
+ */
+function showIncorrectQuantity(): void
+{
+    printString('Введено некорректное значение количества товара.');
+    waitEnter();
 }
 
 /**
