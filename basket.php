@@ -322,6 +322,10 @@ function handleOperation(array &$items, string $operationNumber): void
         case OPERATION_PRINT:
             printShoppingList($items, true);
             break;
+
+        case OPERATION_CHANGE:
+            operationChange($items);
+            break;
     }
 }
 
@@ -347,7 +351,6 @@ function operationAdd(array &$items): void
         return;
     }
 
-    $existingItem = getExistingItem($itemName, $items);
     if (getExistingItem($itemName, $items)) {
         $items[$itemName]++;
         return;
@@ -356,6 +359,19 @@ function operationAdd(array &$items): void
     $items[$itemName] = 1;
 }
 
+/**
+ * Returns an existing item from the shopping list, or null if not found.
+ *
+ * This function takes an item name and the shopping list as arguments.
+ * It searches for the item in the list and if it finds it, it returns the
+ * item value (the current quantity of the item). If the item is not found,
+ * it returns null.
+ *
+ * @param mixed $itemName The name of the item to search for in the list.
+ * @param array $items The shopping list in which to search for the item.
+ *
+ * @return mixed The existing item from the shopping list, or null if not found.
+ */
 function getExistingItem(mixed $itemName, array $items): mixed
 {
     return $items[$itemName] ?? null;
@@ -376,18 +392,97 @@ function operationDelete(array &$items): void
 {
     printList($items);
     printEmptyString();
+
     printString('Введение название товара для удаления из списка:');
     printString('> ', false);
-
     $itemName = getStringSTDIN();
 
-    if (!valueExists($itemName, $items)) {
-        printString('Такого товара нет в списке.');
-        waitEnter();
+    if (!keyExists($itemName, $items)) {
+        showNoItem();
         return;
     }
 
     deleteItem($itemName, $items);
+}
+
+/**
+ * Outputs a message indicating that the item is not in the shopping list.
+ *
+ * This function is called when a user attempts to delete or modify an item
+ * that does not exist in the shopping list. It notifies the user that the
+ * item is not found and waits for the user to press enter before continuing.
+ *
+ * @return void
+ */
+function showNoItem(): void
+{
+    printString('Такого товара нет в списке покупок.');
+    waitEnter();
+}
+
+/**
+ * Changes the quantity of an item in the shopping list.
+ *
+ * Prompts the user to enter the name of the item and the new quantity.
+ * If the user enters an empty string, it outputs an error message and
+ * does not modify the item in the list.
+ *
+ * @param array $items The list of items in which to change the item.
+ *
+ * @return void
+ */
+function operationChange(array &$items): void
+{
+    printList($items);
+    printEmptyString();
+
+    printString('Введение название товара для изменения количества:');
+    printString('> ', false);
+    $itemName = getStringSTDIN();
+
+    if (!keyExists($itemName, $items)) {
+        showNoItem();
+        return;
+    }
+
+    printString('Введение количество товара (точное число | + прибавить число | - отнять число):');
+    printString('> ', false);
+    $itemQuantity = getStringSTDIN();
+
+    changeQuantity($itemName, $items, $itemQuantity);
+}
+
+/**
+ * Changes the quantity of an item in the shopping list.
+ *
+ * If the quantity begins with a +, it adds the number to the current quantity.
+ * If the quantity begins with a -, it subtracts the number from the current quantity.
+ * Otherwise, it sets the quantity to the given number.
+ *
+ * @param mixed $itemName The name of the item to be modified.
+ * @param array $items The list of items in which the item is located.
+ * @param string $itemQuantity The new quantity of the item.
+ *
+ * @return void
+ */
+function changeQuantity(mixed $itemName, array &$items, string $itemQuantity): void
+{
+    if ($itemQuantity[0] === '+') {
+        $items[$itemName] += (int)substr($itemQuantity, 1);
+        return;
+    }
+
+    if ($itemQuantity[0] === '-') {
+        $items[$itemName] -= (int)substr($itemQuantity, 1);
+
+        if ($items[$itemName] <= 0) {
+            unset($items[$itemName]);
+        }
+
+        return;
+    }
+
+    $items[$itemName] = (int)$itemQuantity;
 }
 
 /**
@@ -405,11 +500,9 @@ function operationDelete(array &$items): void
  */
 function deleteItem(mixed $itemName, array &$items): void
 {
-    $key = array_search($itemName, $items, true);
+    if (!array_key_exists($itemName, $items)) return;
 
-    if ($key === false) return;
-
-    unset($items[$key]);
+    unset($items[$itemName]);
     deleteItem($itemName, $items);
 }
 
