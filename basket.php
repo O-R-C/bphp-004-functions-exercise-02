@@ -69,6 +69,34 @@ function printEmptyString(): void
     printString('');
 }
 
+/**
+ * Checks if a given key exists in an array.
+ *
+ * This function utilizes the built-in array_key_exists to determine if
+ * a specified key is present in the provided array.
+ *
+ * @param mixed $key The key to search for in the array.
+ * @param array $array The array in which to search for the key.
+ *
+ * @return bool True if the key exists in the array, false otherwise.
+ */
+function keyExists(mixed $key, array $array): bool
+{
+    return array_key_exists($key, $array);
+}
+
+/**
+ * Outputs a message asking the user to press enter to continue and then waits
+ * for the user to press enter before continuing.
+ *
+ * @return void
+ */
+function waitEnter(): void
+{
+    printString('Нажмите enter для продолжения');
+    fgets(STDIN);
+}
+
 // ========== Shopping list
 
 /**
@@ -139,8 +167,7 @@ function printCount(array $list): void
 {
     $amount = 'Всего ' . count($list) . ' позиций. ';
     printString($amount);
-    printString('Нажмите enter для продолжения');
-    fgets(STDIN);
+    waitEnter();
 }
 
 
@@ -180,22 +207,6 @@ function getCurrentOperations(array $operations, array $items): array
 }
 
 /**
- * Checks if a given key exists in an array.
- *
- * This function utilizes the built-in array_key_exists to determine if
- * a specified key is present in the provided array.
- *
- * @param mixed $key The key to search for in the array.
- * @param array $array The array in which to search for the key.
- *
- * @return bool True if the key exists in the array, false otherwise.
- */
-function keyExists(mixed $key, array $array): bool
-{
-    return array_key_exists($key, $array);
-}
-
-/**
  * Outputs an error message indicating that the selected operation is unknown.
  *
  * This function is used when the user enters an operation number that does
@@ -227,7 +238,7 @@ function printSelectedOperation(array $operations, mixed $operationNumber): void
 {
     printEmptyString();
     $operation = 'Выбрана операция: ' . $operations[$operationNumber];
-    printString($operation, false);
+    printString($operation);
 }
 
 // ========== Handle Operation
@@ -240,19 +251,7 @@ function handleOperation(array &$items, string $operationNumber): void
             break;
 
         case OPERATION_DELETE:
-            // Проверить, есть ли товары в списке? Если нет, то сказать об этом и попросить ввести другую операцию
-            echo 'Текущий список покупок:' . PHP_EOL;
-            echo 'Список покупок: ' . PHP_EOL;
-            echo implode("\n", $items) . "\n";
-
-            echo 'Введение название товара для удаления из списка:' . PHP_EOL . '> ';
-            $itemName = getStringSTDIN();
-
-            if (in_array($itemName, $items, true) !== false) {
-                while (($key = array_search($itemName, $items, true)) !== false) {
-                    unset($items[$key]);
-                }
-            }
+            operationDelete($items);
             break;
 
         case OPERATION_PRINT:
@@ -274,7 +273,7 @@ function handleOperation(array &$items, string $operationNumber): void
  */
 function operationAdd(array &$items): void
 {
-    printString('Введение название товара для добавления в список: ');
+    printString('Введение название товара для добавления в список:');
     printString('> ', false);
     $itemName = getStringSTDIN();
 
@@ -284,6 +283,27 @@ function operationAdd(array &$items): void
     }
 
     $items[] = $itemName;
+}
+
+function operationDelete(array &$items): void
+{
+    printList($items);
+    printEmptyString();
+    printString('Введение название товара для удаления из списка:');
+    printString('> ', false);
+
+    $itemName = getStringSTDIN();
+
+    if (!keyExists($itemName, $items)) {
+        printString('Такого товара нет в списке.');
+        return;
+    }
+
+    if (in_array($itemName, $items, true) !== false) {
+        while (($key = array_search($itemName, $items, true)) !== false) {
+            unset($items[$key]);
+        }
+    }
 }
 
 // ========== Main
