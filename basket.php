@@ -201,7 +201,6 @@ function printWrongOperation(): void
 // ========== Main
 
 $operationNumber = '';
-$keyExist = false;
 
 /**
  * Prompts the user to select an operation from the list of available operations.
@@ -215,16 +214,13 @@ $keyExist = false;
  * number.
  *
  * @param mixed $operationNumber The number of the operation to be selected.
- * @param bool $keyExist Whether the operation number is valid.
  * @param array $operations The list of available operations.
  * @param array $items The list of items in the shopping list.
  *
  * @return void
  */
-function selectOperation(mixed &$operationNumber, bool $keyExist, array $operations, array $items): void
+function selectOperation(mixed &$operationNumber, array $operations, array $items): void
 {
-    if ($keyExist) return;
-
     printShoppingList($items);
     printEmptyString();
 
@@ -232,19 +228,17 @@ function selectOperation(mixed &$operationNumber, bool $keyExist, array $operati
     printOperations($currentOperations);
 
     $operationNumber = getStringSTDIN();
-    $keyExist = keyExists($operationNumber, $currentOperations);
 
-    if (!$keyExist) {
+    if (!keyExists($operationNumber, $currentOperations)) {
         printWrongOperation();
         printEmptyString();
+        selectOperation($operationNumber, $operations, $items);
     }
-
-    selectOperation($operationNumber, $keyExist, $operations, $items);
 }
 
 do {
     clearScreen();
-    selectOperation($operationNumber, $keyExist, $operations, $items);
+    selectOperation($operationNumber, $operations, $items);
 
     echo 'Выбрана операция: '  . $operations[$operationNumber] . PHP_EOL;
 
